@@ -78,9 +78,6 @@
 
 
       </div>
-
-
-
       <div class="right-tips">
         <span>2#船舶</span>
         <span> | </span>
@@ -127,9 +124,11 @@
   .top-info {
     height: 100px;
   }
+
   .van-nav-bar--fixed {
     background-color: #141726 !important;
   }
+
   .info-item {
     height: 80px;
     width: 80px;
