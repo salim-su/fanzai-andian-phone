@@ -5,6 +5,8 @@
         <router-view></router-view>
       </keep-alive>
       <router-view v-else></router-view>
+      <!---->
+      <!--      <router-view></router-view>-->
     </div>
     <div class="layout-footer">
       <TabBar :data="tabbars" @change="handleChange"/>
@@ -32,13 +34,9 @@
             }
           },
           {
-            // icon: {
-            //   active: require('../../../static/img/index-sel.png'),
-            //   inactive: require('../../../static/img/index-sel.png')
-            // }
             title: '报警',
             to: {
-              name: 'Home',
+              name: 'Alarm',
               replace: true
             },
             icon: {
@@ -49,7 +47,7 @@
           {
             title: '统计',
             to: {
-              name: 'About',
+              name: 'Count',
               replace: true
             },
             icon: {
@@ -57,20 +55,38 @@
               inactive: require('../../../static/img/tongji-an.svg')
             }
           }
-        ]
+        ],
+        flag: Boolean
       }
     },
     components: {
       TabBar
     },
     mounted() {
+      // localStorage.clear()
+      setTimeout(res => {
+        this.flag = true
+      }, 2000)
+    },
+    created() {
+      console.log('manager')
+      const localStorageUserAuth = window.localStorage.getItem('userAuth')
+      if (localStorageUserAuth === 'app-manager') {
+        this.$router.replace('/home')
+      } else if (localStorageUserAuth === 'app-captain') {
+        this.$router.replace('/ship-index')
+      } else if (!localStorageUserAuth) {
+        this.$router.replace('/login')
+      }
+    },
+    beforeMount() {
 
     },
     methods: {
       handleChange(v) {
-        if (v === 1) {
-          this.$router.replace({ path: '/add-select', query: { router: '/home' } })
-        }
+        // if (v === 1) {
+        //   this.$router.replace({ path: '/add-select', query: { router: '/home' } })
+        // }
       }
     }
   }

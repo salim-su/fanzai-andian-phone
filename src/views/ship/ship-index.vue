@@ -5,36 +5,41 @@
 
     </div>
 
-    <h2 class="cfff mt0">船舶监控</h2>
+    <h2 class="cfff mt0 flex justify-content-between">
+      <span>船舶监控</span>
+      <span @click="goMore()">更多</span>
+    </h2>
 
     <div class="flex justify-content-between mb20">
       <div class="info-item flex justify-content-evenly flex-column align-items-center">
         <div class="B9C8EE mb-10">年度接入次数</div>
-        <div class="cfff fs14">345</div>
+        <div class="cfff fs14">{{gaikuangInfo.connectionTimesYear}}</div>
       </div>
       <div class="info-item flex justify-content-evenly flex-column align-items-center">
         <div class="B9C8EE mb-10">{{new Date().getMonth()+1}}月接入次数</div>
-        <div class="cfff fs14">345</div>
+        <div class="cfff fs14">{{gaikuangInfo.connectionTimesMonth}}</div>
       </div>
       <div class="info-item flex justify-content-evenly flex-column align-items-center">
         <div class="B9C8EE mb-10">年度能耗</div>
-        <div class="cfff fs14">345</div>
+        <div class="cfff fs14">{{gaikuangInfo.consumptionYear}}</div>
       </div>
       <div class="info-item flex justify-content-evenly flex-column align-items-center">
         <div class="B9C8EE mb-10">{{new Date().getMonth()+1}}月能耗</div>
-        <div class="cfff fs14">345</div>
+        <div class="cfff fs14">{{gaikuangInfo.consumptionMonth}}</div>
       </div>
     </div>
 
     <div class="details p15 posr">
       <div class="flex align-items-center">
         <div class="fs16">
-          <span>1#岸电</span>
-          <span>1#插座</span>
+          <span class="m5">{{currentStateInfo.seName}}</span>
+          <span>{{currentStateInfo.subNo}}#插座</span>
         </div>
-        <div class="status fault flex">
+        <div class="status flex" v-bind:class="status">
           <div class="cir"></div>
-          <span>正常</span>
+          <span v-if="status=='normal'">正常</span>
+          <span v-if="status=='fault'">故障</span>
+          <span v-if="status=='alarm'">报警</span>
         </div>
       </div>
 
@@ -46,30 +51,34 @@
           <div class="flex">
             <div class="flex1 flex justify-content-center flex-column align-items-center">
               <van-icon class="info fs16" class-prefix="my-icon" name="iconloudianliu"/>
-              <span>12MA</span>
+              <span>{{leakage}}mA</span>
             </div>
             <div class="flex1 flex justify-content-center flex-column align-items-center">
               <van-icon class="info fs16" class-prefix="my-icon" name="iconjierushichang"/>
-              <span>12MA</span>
+              <div>
+                <span v-if="showTimeH>0">{{showTimeH}}时</span>
+                <span>{{showTimeM}}分</span>
+                <span>{{showTimeS}}秒</span>
+              </div>
             </div>
             <div class="flex1 flex justify-content-center flex-column align-items-center">
               <van-icon class="info fs16" class-prefix="my-icon" name="iconleijinenghao"/>
-              <span>12MA</span>
+              <span>{{currentStateInfo.electricityConsumption}}kwh</span>
             </div>
           </div>
 
           <div class="flex">
             <div class="flex1 flex justify-content-center flex-column align-items-center">
               <van-icon class="info fs16" class-prefix="my-icon" name="iconAxiang"/>
-              <span>12MA</span>
+              <span>{{selABC.aElectricity}}A {{selABC.aVoltage}}V</span>
             </div>
             <div class="flex1 flex justify-content-center flex-column align-items-center">
               <van-icon class="info fs16" class-prefix="my-icon" name="iconBxiang"/>
-              <span>12MA</span>
+              <span>{{selABC.bElectricity}}A {{selABC.bVoltage}}V</span>
             </div>
             <div class="flex1 flex justify-content-center flex-column align-items-center">
               <van-icon class="info fs16" class-prefix="my-icon" name="iconCxiang"/>
-              <span>12MA</span>
+              <span>{{selABC.cElectricity}}A {{selABC.cVoltage}}V</span>
             </div>
           </div>
         </div>
@@ -79,48 +88,51 @@
 
 
       <div class="right-tips">
-        <span>2#船舶</span>
+        <span>{{currentStateInfo.shipName}}</span>
         <span> | </span>
-        <span>张三</span>
+        <span>{{currentStateInfo.captainName}}</span>
       </div>
     </div>
 
     <h2>报警信息</h2>
 
-    <div :key="index" class="card flex mb15" v-bind:class="flagAlarm?'loudian':'guowen'" v-for="(item,index) of [1,2,3] ">
+    <div
+      :key="index"
+      class="card flex mb15"
+      v-bind:class="item.type=='fault'?'guzhang':'baojing'"
+      v-for="(item,index) of faultAlarmPageCaptainList ">
       <img class="loudianguowenimgs" src="../../../static/img/loudian.png" v-if="flagAlarm">
       <img alt="" class="loudianguowenimgs" src="../../../static/img/guowen.png" v-if="!flagAlarm">
       <div class="card-info cfff">
-        <div class="mb5 flex align-items-center justify-content-between">
+        <div class="mb10 flex align-items-center justify-content-between">
           <span class="fs16 fw">
-            <span v-text="flagAlarm?'漏电报警':'过温报警'"></span>
+            <span>{{item.type =='fault'?t1(item.category):t2(item.category)}}</span>
           </span>
-          <span>2020年1月11日</span>
+          <span>{{$moment(item.createTime).format('YYYY-MM-DD hh:mm')}}</span>
         </div>
+        <!--        <div class="mb5 flex align-items-center justify-content-between">-->
+        <!--          <span class="fs14">报警值:</span>-->
+        <!--          <span>90mA</span>-->
+        <!--        </div>-->
 
-        <div class="mb5 flex align-items-center justify-content-between">
-          <span class="fs14">报警值:</span>
-          <span>90mA</span>
-        </div>
+        <!--        <div class="mb5 flex align-items-center justify-content-between">-->
+        <!--          <span class="fs14">阀值:</span>-->
+        <!--          <span>90mA</span>-->
+        <!--        </div>-->
 
-        <div class="mb5 flex align-items-center justify-content-between">
-          <span class="fs14">阀值:</span>
-          <span>90mA</span>
-        </div>
-
-        <div class="mb5 flex align-items-center justify-content-between">
+        <div class="mb10 flex align-items-center justify-content-between">
           <span class="fs14">报警位置:</span>
-          <span>#1#2岸电岸电</span>
+          <span>{{item.areaName}} {{item.seName}} {{item.subNo}} 插座</span>
         </div>
 
-        <div class="mb5 flex align-items-center justify-content-between">
+        <div class="mb10 flex align-items-center justify-content-between">
           <span class="fs14">涉事船舶:</span>
-          <span>#232船舶</span>
+          <span>{{item.shipName}}</span>
         </div>
       </div>
 
       <div class="flex align-items-center ml10">
-        <div class="pross">处理</div>
+        <div @click="pross(item)" class="pross">处理</div>
       </div>
     </div>
 
@@ -130,21 +142,94 @@
 
 <script>
   // import { Toast } from 'vant'
-  // import { getAreaList } from '../../plugins/area'
-  // import { updateDevice } from '../../api/user'
+  import { transformTypeAlarm, transformTypeFault } from '../../utils/index'
+  import { getShipBasicInfo, getShipCurrentState, PostalarmFaultPageCaptain } from '../../api/user'
+
   export default {
     name: 'ship-index',
     data() {
       return {
         deviceName: '',
-        flagAlarm: Boolean
+        flagAlarm: Boolean,
+        gaikuangInfo: '',
+        currentStateInfo: '',
+        currentStateInfoJson: '',
+        showTimeH: '',
+        showTimeM: '',
+        showTimeS: '',
+        leakage: '',
+        selABC: '',
+        faultAlarmPageCaptainList: '',
+        t1: transformTypeFault,
+        t2: transformTypeAlarm,
+        status: ''
       }
     },
     mounted() {
-      this.flagAlarm = true
-      console.log(new Date().getMonth())
+      console.log(this.t1('1'))
+      this.getGaiKuang()
+      this.getCurrentState()
+      this.getList()
+      // this.flagAlarm = true
+      // console.log(new Date().getMonth())
     },
-    methods: {},
+    methods: {
+      getGaiKuang() {
+        getShipBasicInfo().then(res => {
+          this.gaikuangInfo = res['data']
+        })
+      },
+      getCurrentState() {
+        getShipCurrentState().then(res => {
+          this.currentStateInfo = res['data']
+          this.currentStateInfoJson = JSON.parse(this.currentStateInfo['jsonData'])
+          this.showTimeH = this.$moment.duration(this.currentStateInfo['connectionDuration'], 'seconds').hours()
+          this.showTimeM = this.$moment.duration(this.currentStateInfo['connectionDuration'], 'seconds').minutes()
+          this.showTimeS = this.$moment.duration(this.currentStateInfo['connectionDuration'], 'seconds').seconds()
+          this.leakage = this.currentStateInfoJson['ltu']['leakage']
+          this.selABC = this.currentStateInfoJson.meterInfo[this.currentStateInfo.subNo]
+        })
+      },
+      goMore() {
+        this.$router.replace({
+          path: '/ship-more',
+          query: { routerParms: '/ship-index' }
+        })
+      },
+      getList() {
+        const postData = {
+          size: 10,
+          current: 1,
+          status: 0
+        }
+        PostalarmFaultPageCaptain(postData).then(res => {
+          this.faultAlarmPageCaptainList = res['data']['records']
+          if (this.faultAlarmPageCaptainList.length > 0) {
+            this.faultAlarmPageCaptainList.forEach(res => {
+              res['jsonData'] = JSON.parse(res['jsonData'])
+            })
+          }
+          console.log(this.faultAlarmPageCaptainList)
+          if (this.faultAlarmPageCaptainList.length > 0) {
+            if (this.faultAlarmPageCaptainList.filter(p => p.type === 'alarm').length > 0) {
+              this.status = 'alarm'
+            } else {
+              this.status = 'fault'
+            }
+          } else {
+            this.status = 'normal'
+          }
+        })
+      },
+      pross(item) {
+        console.log(item)
+        const objAdd = JSON.stringify(item)
+        this.$router.replace({
+          path: '/ship-alarm-process?objAdd=' + encodeURIComponent(objAdd),
+          query: { routerParms: '/ship-index' }
+        })
+      }
+    },
     watch: {
       $route(to, from) {
         console.log(to)
@@ -280,16 +365,16 @@
 
   .card {
     width: 337.5px;
-    height: 150px;
+    height: 100px;
     border-radius: 8px;
     padding: 12px;
 
-    &.loudian {
+    &.guzhang {
       background-image: url('../../../static/img/loudian-bg.png');
 
     }
 
-    &.guowen {
+    &.baojing {
       background-image: url('../../../static/img/guowen-bg.png');
 
     }

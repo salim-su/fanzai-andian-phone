@@ -1,16 +1,14 @@
 const api = {
   UserInfo: '/user/userinfo',
   UserName: '/user/name',
-  ShipList: 'epidemic/ship/list',
-  SendCode: 'wechat/sendCode',
-  LoginSystem: 'wechat/token',
-  GetDevices: 'wechat/getDevices',
-  UpdateDevice: 'wechat/updateDevice',
-  GetDeviceByImei: 'wechat/getDeviceByImei',
-  GetAlarmList: 'wechat/getAlarmList',
-  GetUnHandleAlarmList: 'wechat/getUnHandleAlarmList',
-  HandleAlarm: 'wechat/handleAlarm',
-  RemoveDevice: 'wechat/removeDevice'
+  LoginSystem: 'login/blade-auth/oauth/token',
+  GetShipBasicInfo: 'shorePower/app/captain/shipBasicInfo',
+  GetShipCurrentState: '/shorePower/app/captain/shipCurrentState',
+  PostalarmFaultPageCaptain: '/shorePower/app/captain/alarmFaultPage',
+  HandleAlarm: '/shorePower/alarm/handle',
+  HandleFault: '/shorePower/fault/handle',
+  ConsumptionInfo: '/shorePower/app/captain/consumptionInfo',
+  SeList: '/shorePower/app/manager/seList'
 }
 
 export default api

@@ -3,82 +3,28 @@
   <div class="con">
     <van-nav-bar
       :fixed="true"
-      title="岸电明细"
+      title="统计"
     />
 
     <div class="flex top-info justify-content-between">
       <div class="info-item flex flex-column justify-content-around">
         <img alt="" class="imgs" src="../../../static/img/l-wendu.png">
-        <div class="cfff fs14">A相</div>
-        <div class="A6D fs14 fw">{{pValueInfo.aTemperature}} ℃</div>
+        <div class="cfff fs14">11111</div>
+        <div class="A6D fs14 fw">36.6 ℃</div>
       </div>
       <div class="info-item flex flex-column justify-content-around">
-        <img alt="" class="imgs" src="../../../static/img/l-wendu.png">
-        <div class="cfff fs14">B相</div>
-        <div class="A6D fs14 fw">{{pValueInfo.bTemperature}} ℃</div>
+        <img alt="" class="imgs" src="../../../static/img/l-a.png">
+        <div class="cfff fs14">11111</div>
+        <div class="A6D fs14 fw">36.6 ℃</div>
       </div>
       <div class="info-item flex flex-column justify-content-around">
-        <img alt="" class="imgs" src="../../../static/img/l-wendu.png">
-        <div class="cfff fs14">C相</div>
-        <div class="A6D fs14 fw">{{pValueInfo.cTemperature}} ℃</div>
+        <img alt="" class="imgs" src="../../../static/img/l-b.png">
+        <div class="cfff fs14">11111</div>
+        <div class="A6D fs14 fw">36.6 ℃</div>
       </div>
     </div>
 
 
-    <div :key="index" class="details p15 posr mb25" v-for="(item,index) in [1,2,3]">
-      <div class="flex align-items-center cfff">
-        <div class="fs16 flex align-items-center">
-          <img alt="" class="imgs mr5" src="../../../static/img/l-ship.png">
-          <span>1#岸电</span>
-          <span>1#插座</span>
-        </div>
-        <div class="status flex offline">
-          <div class="cir"></div>
-          <span>正常</span>
-        </div>
-      </div>
-
-      <div class="flex details-content">
-        <div class="flex1 flex flex-column justify-content-evenly mt15">
-          <div class="flex A0D mb25">
-            <div class="flex1 flex justify-content-center flex-column align-items-center">
-              <van-icon class="info fs16" class-prefix="my-icon" name="iconloudianliu"/>
-              <span class="fs14 fw">12MA</span>
-            </div>
-            <div class="flex1 flex justify-content-center flex-column align-items-center">
-              <van-icon class="info fs16" class-prefix="my-icon" name="iconjierushichang"/>
-              <span class="fs14 fw">12MA</span>
-            </div>
-            <div class="flex1 flex justify-content-center flex-column align-items-center">
-              <van-icon class="info fs16" class-prefix="my-icon" name="iconleijinenghao"/>
-              <span class="fs14 fw">12MA</span>
-            </div>
-          </div>
-
-          <div class="flex A0D">
-            <div class="flex1 flex justify-content-center flex-column align-items-center">
-              <van-icon class="info fs16" class-prefix="my-icon" name="iconAxiang"/>
-              <span class="fs14 fw">12MA</span>
-            </div>
-            <div class="flex1 flex justify-content-center flex-column align-items-center">
-              <van-icon class="info fs16" class-prefix="my-icon" name="iconBxiang"/>
-              <span class="fs14 fw">12MA</span>
-            </div>
-            <div class="flex1 flex justify-content-center flex-column align-items-center">
-              <van-icon class="info fs16" class-prefix="my-icon" name="iconCxiang"/>
-              <span class="fs14 fw">12MA</span>
-            </div>
-          </div>
-        </div>
-
-
-      </div>
-      <div class="right-tips">
-        <span>2#船舶</span>
-        <span> | </span>
-        <span>张三</span>
-      </div>
-    </div>
 
     <div id="main" style="width: 600px;height:400px;"></div>
 
@@ -98,18 +44,14 @@
         timer: '',
         flag1: false,
         flag2: true,
-        myChart: '',
-        pValueInfo:''
+        myChart: ''
       }
     },
 
     computed: {},
 
     mounted() {
-      console.log(this.$route.query.routerParms)
-      console.log(JSON.parse(this.$route.query.objAdd))
-      this.pValueInfo = JSON.parse(this.$route.query.objAdd)
-      // this.myEcharts()
+      this.myEcharts()
       // this.getDevicesInfo()
       // this.nickname = window.localStorage.getItem('nick_name')
       // this.phone = window.localStorage.getItem('phone')
@@ -162,7 +104,7 @@
 
   .info-item {
     height: 80px;
-    width: 100px;
+    width: 80px;
     /*background-image: linear-gradient(to right, #192538, #192538);*/
     background-color: rgba(25, 37, 56, .7);
     border-radius: 5px;

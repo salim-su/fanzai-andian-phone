@@ -3,13 +3,13 @@ import api from './index'
 import request from '@/utils/request'
 
 // 登录
-// export function login(data) {
-//   return request({
-//     url: api.Login,
-//     method: 'post',
-//     data
-//   })
-// }
+export function login(data) {
+  return request({
+    url: api.Login,
+    method: 'post',
+    data
+  })
+}
 
 // 用户信息 post 方法
 export function getUserInfo(data) {
@@ -50,11 +50,11 @@ export function sendCode(data) {
   })
 }
 // 登录
-export function loginSystem(data) {
+export function loginSystem(params) {
   return request({
     url: api.LoginSystem,
     method: 'post',
-    data,
+    params,
     hideloading: true
   })
 }
@@ -104,6 +104,42 @@ export function getUnHandleAlarmList(params) {
   })
 }
 // 获取未处理报警列表
+export function removeDevice(data) {
+  return request({
+    url: api.RemoveDevice,
+    method: 'post',
+    data,
+    hideloading: true
+  })
+}
+// 船长获取概况
+export function getShipBasicInfo(params) {
+  return request({
+    url: api.GetShipBasicInfo,
+    method: 'get',
+    params,
+    hideloading: true
+  })
+}
+// 船长获取概况
+export function getShipCurrentState(params) {
+  return request({
+    url: api.GetShipCurrentState,
+    method: 'get',
+    params,
+    hideloading: true
+  })
+}
+// 船长获取概况
+export function PostalarmFaultPageCaptain(params) {
+  return request({
+    url: api.PostalarmFaultPageCaptain,
+    method: 'get',
+    params,
+    hideloading: true
+  })
+}
+// 处置报警
 export function handleAlarm(data) {
   return request({
     url: api.HandleAlarm,
@@ -112,12 +148,30 @@ export function handleAlarm(data) {
     hideloading: true
   })
 }
-// 获取未处理报警列表
-export function removeDevice(data) {
+// 处置故障
+export function handleFault(data) {
   return request({
-    url: api.RemoveDevice,
+    url: api.HandleFault,
     method: 'post',
     data,
+    hideloading: true
+  })
+}
+// 处置故障
+export function consumptionInfo(params) {
+  return request({
+    url: api.ConsumptionInfo,
+    method: 'get',
+    params,
+    hideloading: true
+  })
+}
+// manage 获取岸电列表
+export function seList(params) {
+  return request({
+    url: api.SeList,
+    method: 'get',
+    params,
     hideloading: true
   })
 }

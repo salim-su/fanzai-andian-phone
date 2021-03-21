@@ -7,31 +7,35 @@
 
     <van-nav-bar
       :fixed="true"
-      title="报警处置"
+      :title="pValueObj.type == 'fault'?'故障处理':'报警处理'"
     />
 
     <div class="alert-con">
       <div class="bianhao flex flex-column">
 
         <div class="fs16 p5 flex alarm-color">
-          <img src="../../../static/img/location-red.png" alt="" class="imgs mr10">
-          <div>#1岸电动图人体</div>
+          <img alt="" class="imgs mr10" src="../../../static/img/location-red.png">
+          <div>
+            <span v-text="pValueObj.type=='fault'?'故障处置':'报警处置'"></span>
+            {{pValueObj.areaName}} - {{pValueObj.seName}}
+          </div>
         </div>
 
-        <div class="fs16 p5 c6e">
-          报警时间
-        </div>
-
-        <div class="fs16 p5 line">
-          {{alertInfo.deviceNo}}了的卡价倒垃圾拉开就
-        </div>
-
-        <div class="fs16 p5 c6e">
-          报警类型
-        </div>
+        <div class="fs16 p5 c6e" v-text="pValueObj.type=='fault'?'故障时间':'报警时间'"></div>
 
         <div class="fs16 p5 line">
-          {{alertInfo.deviceName}}了的卡价倒垃圾拉开就啊
+          {{$moment(pValueCreateTime).format('YYYY-MM-DD hh:mm')}}
+        </div>
+
+        <div class="fs16 p5 c6e" v-text="pValueObj.type=='fault'?'故障类型':'报警类型'"></div>
+
+        <div class="fs16 p5 line">
+          <span v-if="pValueObj.type == 'fault'">
+            {{t1(pValueObj.category)}}
+          </span>
+          <span v-if="pValueObj.type == 'alarm'">
+            {{t2(pValueObj.category)}}
+          </span>
         </div>
 
         <div class="fs16 p5 c6e">
@@ -40,29 +44,29 @@
         <div class="fs16 p5 line">
 
           <van-field
-            v-model="proresult"
-            rows="2"
             autosize
-            type="textarea"
             maxlength="200"
             placeholder="请输入处置结果"
+            rows="2"
             show-word-limit
+            type="textarea"
+            v-model="proresult"
           />
 
-<!--          <van-field v-model="proresult" placeholder="请输入处置结果" class="fs16"/>-->
+          <!--          <van-field v-model="proresult" placeholder="请输入处置结果" class="fs16"/>-->
         </div>
 
       </div>
 
       <div class="flex mt25">
-          <div class="flex1">
-            <van-button @click="done()" block class="chuli" type="warning">取消</van-button>
-          </div>
-          <div style="width: 20px;"></div>
-          <div class="flex1">
-            <van-button @click="done()" block class="chuli mb15" type="info">确定处理</van-button>
+        <div class="flex1">
+          <van-button @click="cancel()" block class="chuli" type="warning">取消</van-button>
+        </div>
+        <div style="width: 20px;"></div>
+        <div class="flex1">
+          <van-button @click="done()" block class="chuli mb15" type="info">确定处理</van-button>
 
-          </div>
+        </div>
       </div>
     </div>
 
@@ -70,6 +74,9 @@
 </template>
 
 <script>
+  import { transformTypeAlarm, transformTypeFault } from '../../utils/index'
+  import { handleAlarm, handleFault } from '../../api/user'
+  import { Toast } from 'vant'
 
   export default {
     name: 'ship-alarm-process',
@@ -77,14 +84,69 @@
       return {
         deviceName: '',
         alertInfo: '',
-        proresult: ''
+        proresult: '',
+        routerParms: '',
+        pValueCreateTime: '',
+        pValueType: '',
+        pValueObj: '',
+        t1: transformTypeFault,
+        t2: transformTypeAlarm
       }
     },
-
     mounted() {
-
+      console.log(this.$route.query.routerParms)
+      console.log(JSON.parse(this.$route.query.objAdd))
+      this.pValueObj = JSON.parse(this.$route.query.objAdd)
+      this.pValueCreateTime = JSON.parse(this.$route.query.objAdd).createTime
+      if (this.$route.query.routerParms) {
+        this.routerParms = this.$route.query.routerParms
+      }
     },
-    methods: {},
+    methods: {
+      cancel() {
+        this.$router.replace({ path: this.$route.query.routerParms })
+      },
+      done() {
+        if (this.proresult) {
+          if (this.pValueObj.type === 'fault') {
+            this.handleFaultInfo()
+          }
+          if (this.pValueObj.type === 'alarm') {
+            this.handleAlarmInfo()
+          }
+        } else {
+          Toast('请输入处置内容')
+        }
+      },
+      handleAlarmInfo() {
+        const postData = {
+          id: this.pValueObj.id,
+          handleResult: this.proresult,
+          status: '3'
+        }
+        handleAlarm(postData).then(res => {
+          console.log(res)
+          Toast('处置成功')
+          setTimeout(res => {
+            this.$router.replace({ path: this.$route.query.routerParms })
+          }, 1000)
+        })
+      },
+      handleFaultInfo() {
+        const postData = {
+          id: this.pValueObj.id,
+          handleResult: this.proresult,
+          status: '3'
+        }
+        handleFault(postData).then(res => {
+          console.log(res)
+          Toast('处置成功')
+          setTimeout(res => {
+            this.$router.replace({ path: this.$route.query.routerParms })
+          }, 1000)
+        })
+      }
+    },
     watch: {
       $route(to, from) {
       }
@@ -92,7 +154,7 @@
   }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss" scoped>
   .alert-bg {
     width: 100vw;
     height: 255px;
@@ -133,13 +195,16 @@
     border-bottom: 1px solid #e3e3e3;
     margin-bottom: 10px;
   }
-  .imgs{
+
+  .imgs {
     width: 18px;
     height: 22px;
   }
-  .alarm-color{
+
+  .alarm-color {
     color: #FF0946;
   }
+
   /*.chuli {*/
   /*  background-color: #3BB19C !important;*/
   /*  border: 0.02667rem solid #3BB19C !important;*/

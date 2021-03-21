@@ -10,20 +10,24 @@ import store from './store'
 import axios from 'axios'
 // 设置 js中可以访问 $cdn
 import { $cdn } from '@/config'
-Vue.prototype.$cdn = $cdn
-Vue.prototype.$axios = axios
 // 全局引入按需引入UI库 vant
 import '@/plugins/vant'
 // 引入全局样式
 import '@/assets/css/index.scss'
 // 移动端适配
 import 'lib-flexible/flexible.js'
-
 // filters
 import './filters'
-Vue.config.productionTip = false
+// moment
+import moment from 'moment'
 
+Vue.prototype.$cdn = $cdn
+Vue.prototype.$axios = axios
+Vue.prototype.$$router = router
+Vue.prototype.$echarts = require('echarts')
+Vue.config.productionTip = false
 Vue.prototype.$wx = wx
+Vue.prototype.$moment = moment
 
 router.beforeEach((to, from, next) => {
   console.log(to)
@@ -55,10 +59,10 @@ router.beforeEach((to, from, next) => {
     }
   }
 })
-new Vue({
+var vue = new Vue({
   el: '#app',
   router,
   store,
   render: h => h(App)
 })
-
+export default vue

@@ -3,9 +3,9 @@ import store from '@/store'
 import { Toast } from 'vant'
 // 根据环境不同引入不同api地址
 import { baseApi } from '@/config'
+import context from '../main.js'
 const token = window.localStorage.getItem('token')
 console.log(token)
-console.log(window.localStorage)
 // create an axios instance
 const service = axios.create({
   baseURL: baseApi, // url = base api url + request url
@@ -42,18 +42,20 @@ service.interceptors.request.use(
 // respone拦截器
 service.interceptors.response.use(
   response => {
-    Toast.clear()
+    // return Promise.resolve(response.data)
+
+    if (response['data']['error_code'] === 400) {
+      Toast(response['data']['error_description'])
+    }
     const res = response.data
     if (res.code && res.code !== 200) {
       // 登录超时,重新登录
       if (res.code === 401) {
-        localStorage.clear()
-        window.location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7fbadec3812a8afe&redirect_uri=http://weixin.xinyaiot.com/wx/redirect/wx7fbadec3812a8afe/iot&response_type=code&scope=snsapi_userinfo&state=123&connect_redirect=1#wechat_redirect'
-
-        // location.reload()
-        // store.dispatch('FedLogOut').then(() => {
-        //   location.reload()
-        // })
+        Toast('登录状态过期，请重新登录')
+        setTimeout(res => {
+          localStorage.clear()
+          context.$router.push('/login')
+        }, 1500)
       }
       return Promise.reject(res || 'error')
     } else {
@@ -61,9 +63,11 @@ service.interceptors.response.use(
     }
   },
   error => {
-    Toast.clear()
-    console.log('err' + error) // for debug
-    return Promise.reject(error)
+    console.log(error.response)
+    if (error.response['data']['code']) {
+      Toast(error.response.data.msg)
+    }
+    return Promise.reject(error.response)
   }
 )
 

@@ -55,6 +55,15 @@ module.exports = {
     },
     proxy: {
       // 配置跨域
+      '/api/login': {
+        target: 'http://localhost:8866/',
+        // ws:true,
+        changOrigin: true,
+        pathRewrite: {
+          '^/api/login': '/'
+        }
+      },
+      // 配置跨域
       '/api': {
         target: 'http://localhost:8866/',
         // ws:true,
@@ -63,15 +72,7 @@ module.exports = {
           '^/api': '/'
         }
       },
-      // 配置跨域
-      '/wxapi': {
-        target: 'http://weixin.xinyaiot.com/',
-        // ws:true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/wxapi': '/'
-        }
-      }
+
     }
   },
   css: {

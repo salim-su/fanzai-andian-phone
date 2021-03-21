@@ -20,6 +20,10 @@ export const constantRouterMap = [
     component: () => import('@/views/andian/andian-info')
   },
   {
+    path: '/andian-overview',
+    component: () => import('@/views/andian/andian-overview')
+  },
+  {
     path: '/ship-alarm-process',
     component: () => import('@/views/ship/ship-alarm-process')
   },
@@ -42,23 +46,29 @@ export const constantRouterMap = [
   {
     path: '/',
     component: () => import('@/views/layouts/index'),
-    redirect: '/home',
-    meta: {
-      title: '首页',
-      keepAlive: false
-    },
+    // redirect: '/home',
+    // meta: {
+    //   title: '首页',
+    //   keepAlive: false
+    // },
     children: [
       {
         path: '/home',
         name: 'Home',
         component: () => import('@/views/home/index'),
-        meta: { title: '首页', keepAlive: false, requireAuth: false }
+        meta: { title: '首页', keepAlive: false, requireAuth: true }
       },
       {
-        path: '/about',
-        name: 'About',
-        component: () => import('@/views/home/about'),
-        meta: { title: '关于我', keepAlive: false }
+        path: '/count',
+        name: 'Count',
+        component: () => import('@/views/home/count'),
+        meta: { title: '统计', keepAlive: false, requireAuth: false }
+      },
+      {
+        path: '/alarm',
+        name: 'Alarm',
+        component: () => import('@/views/home/alarm'),
+        meta: { title: '报警', keepAlive: false, requireAuth: false }
       }
     ]
   }

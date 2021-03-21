@@ -44,5 +44,11 @@
             margin-top: -20px;*/
     }
   }
+  .van-nav-bar__text {
+    color: #ffffff !important;
+  }
+  .van-nav-bar .van-icon{
+    color: #ffffff !important;
+  }
 
 </style>

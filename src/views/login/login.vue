@@ -1,119 +1,74 @@
 <template>
   <div class="login">
     <div class="login-content">
-      <div class="phone">手机号登录</div>
-
-      <van-cell-group class="mt15" :border="false">
-        <van-field type="number" v-model="phoneValue" placeholder="请输入手机号"/>
+      <div class="phone">欢迎您</div>
+      <van-cell-group :border="false" class="mt15">
+        <div class="label">用户名</div>
+        <van-field placeholder="请输入用户名" type="text" v-model="username"/>
+      </van-cell-group>
+      <van-cell-group :border="false" class="mt15">
+        <div class="label">密码</div>
+        <van-field placeholder="请输入密码" type="password" v-model="password"/>
       </van-cell-group>
 
-      <van-cell-group class="flex mt15 align-items-center" :border="false">
-        <van-field type="number" v-model="captchaValue" placeholder="请输入验证码"/>
-<!--        <van-button plain type="info" class="spec-btn" @click="start">-->
-
-<!--          <template v-if="flag">获取验证码</template>-->
-<!--          <template v-else>-->
-<!--            <van-count-down-->
-<!--              ref="countDown"-->
-<!--              millisecond-->
-<!--              :time="60000"-->
-<!--              :auto-start="false"-->
-<!--              format="ss秒"-->
-<!--              @finish="finish"-->
-<!--            />-->
-<!--          </template>-->
-
-<!--        </van-button>-->
-      </van-cell-group>
-
-      <van-button color="#7232dd" class="mt30" block @click="login">登 录</van-button>
+      <van-button @click="login" block class="mt30" color="linear-gradient(to right, #3D84F8, #015BE1)">登 录</van-button>
     </div>
   </div>
 </template>
 
 <script>
-import { Toast } from 'vant'
-import { loginSystem } from '../../api/user'
-export default {
-  name: 'login',
-  data() {
-    return {
-      phoneValue: '',
-      captchaValue: '',
-      flag: true,
-      openid: '',
-      nickname: ''
-    }
-  },
-  mounted() {
-    // this.$router.replace('/')
-    // this.$router.push('/')
+  import { Toast } from 'vant'
+  import { loginSystem } from '../../api/user'
 
-    if (window.localStorage.getItem('token')) {
-      this.$router.replace('/')
-    }
-    // console.log(this.$route.query.openid)
-    // // Toast('倒计时结束'
-    // if (this.$route.query.openid) {
-    //   this.openid = this.$route.query.openid
-    // }
-    // if (this.$route.query.nickname) {
-    //   this.nickname = this.$route.query.nickname
-    // }
-  },
-  components: {
-    [Toast.name]: Toast
-  },
-  methods: {
-    // start() {
-    //   if (!this.phoneValue) {
-    //     Toast('请输入手机号')
-    //   } else {
-    //     const postData = {
-    //       phoneNumber: this.phoneValue
-    //     }
-    //     sendCode(postData).then(res => {
-    //       this.flag = false
-    //       Toast('发送验证码成功')
-    //       setTimeout(res => {
-    //         this.$refs.countDown.start()
-    //       }, 300)
-    //     }).catch(res => {
-    //     })
-    //   }
-    // },
-    finish() {
-      this.flag = true
-    },
-    login() {
-      this.$router.push('/')
-      //
-      // if (!this.phoneValue) {
-      //   Toast('请输入手机号')
-      //   return
-      // }
-      // if (!this.captchaValue) {
-      //   Toast('请输入验证码')
-      //   return
-      // }
-      const postdata = {
-        nickName: this.nickname,
-        wechatOpenid: this.openid,
-        phoneNumber: this.phoneValue,
-        code: this.captchaValue
+  export default {
+    name: 'login',
+    data() {
+      return {
+        username: 'appcaptain',
+        password: 'Lb123456.'
       }
-      loginSystem(postdata).then(res => {
-        localStorage.setItem('token_type', res.token_type)
-        localStorage.setItem('nick_name', res.nick_name)
-        localStorage.setItem('token', res.access_token)
-        localStorage.setItem('phone', res.user_name)
-        // this.$router.push('/')
-      }).catch(res => {
-        Toast('验证码输入错误')
-      })
+    },
+    mounted() {
+      // if (window.localStorage.getItem('token')) {
+      //   this.$router.replace('/')
+      // }
+    },
+    components: {
+      [Toast.name]: Toast
+    },
+    methods: {
+      login() {
+        if (!this.username) {
+          Toast('请输入用户名')
+          return
+        }
+        if (!this.password) {
+          Toast('请输入密码')
+          return
+        }
+        const postdata = {
+          username: this.username,
+          password: this.password
+        }
+        loginSystem(postdata).then(res => {
+          localStorage.setItem('token_type', res.token_type)
+          localStorage.setItem('token', res.access_token)
+          const auth = res['role_name'].split(',')
+          if (auth.filter(p => p === 'app-manager').length) {
+            localStorage.setItem('userAuth', 'app-manager')
+          } else if (auth.filter(p => p === 'app-captain').length) {
+            localStorage.setItem('userAuth', 'app-captain')
+          }
+          const localStorageUserAuth = window.localStorage.getItem('userAuth')
+          if (localStorageUserAuth === 'app-manager') {
+            this.$router.replace('/')
+          } else if (localStorageUserAuth === 'app-captain') {
+            this.$router.replace('/ship-index')
+          }
+        })
+      }
     }
   }
-}
 </script>
 
 <style scoped>
@@ -121,7 +76,7 @@ export default {
     width: 375px;
     height: 667px;
     background-image: url('../../../static/img/login-bg.png');
-    background-size:cover;
+    background-size: cover;
     /*background-repeat: no-repeat;*/
     position: fixed;
     top: 0;
@@ -143,7 +98,12 @@ export default {
 
   .phone {
     font-size: 24px;
-    color: #5626B8;
+    color: #015BE1;
+  }
+
+  .label {
+    color: #96979A;
+    font-size: 16px;
   }
 
   .van-field {

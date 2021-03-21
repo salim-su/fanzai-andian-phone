@@ -6,25 +6,27 @@
       title="岸电监控"
     />
 
-    <div :key="index" v-for="(item,index ) in [1,2,3,4,5]">
+    <div :key="index" v-for="(item,index ) in andianList">
       <div class="flex align-items-center mb15">
         <div class="cir-before">
 
         </div>
         <div class="cfff fs16">
-          动图提1112222
+          {{item.areaName}} {{item.seCount}}
         </div>
       </div>
 
       <div class="row cfff">
-        <div :key="index" class=" mb15 col-1-2" v-for="(item,index ) in [1,2,3,4,5]">
-          <div class="wd cfff fs16 flex align-items-center justify-content-between p10">
-            <div>岸电</div>
+        <div :key="index" class=" mb15 col-1-2" v-for="(i,index ) in item.seList">
+          <div @click="goToDetails(i)" class="wd cfff fs16 flex align-items-center justify-content-between p10">
+            <div>{{i.name}}</div>
 
             <div class="flex">
-              <div class="mr5 cir" v-bind:class="{'cir-null':flag2,'cir-red':flag1}"></div>
-              <div class="cir-red mr5 cir"></div>
-              <div class="cir-green mr5 cir"></div>
+              <div
+                :key="index"
+                class="mr5 cir"
+                v-bind:class="{'cir-null':io.deviceStatus == 0 || io.deviceStatus==1,'cir-green':io.deviceStatus==2,'cir-red':io.isAlarm==1,'cir-orange':io.isFault==1}"
+                v-for="(io,index) in i.outletList"></div>
             </div>
           </div>
         </div>
@@ -37,8 +39,7 @@
 </template>
 
 <script>
-  import { Toast } from 'vant'
-  import { getDevices, getUnHandleAlarmList, removeDevice } from '../../api/user'
+  import { seList } from '../../api/user'
 
   export default {
     data() {
@@ -48,56 +49,33 @@
         phone: '',
         timer: '',
         flag1: false,
-        flag2: true
+        flag2: true,
+        andianList: ''
       }
     },
 
     computed: {},
 
     mounted() {
-      // this.getDevicesInfo()
-      // this.nickname = window.localStorage.getItem('nick_name')
-      // this.phone = window.localStorage.getItem('phone')
-      //
-      // this.getUnHandleAlarmListInfo()
-      // this.timer = setInterval(() => {
-      //   this.getUnHandleAlarmListInfo()
-      // }, 30000)
+      this.getSeList()
     },
 
     methods: {
-      getDevicesInfo() {
-        getDevices().then(res => {
-          this.devicesInfoList = res.data
-        }).catch(res => {
+      getSeList() {
+        const postData = {
+          query: '{areaSeList{areaName,seCount,seList{id,name,no,aTemperature，bTemperature，cTemperature，outletList{outletId,outletSeq,deviceStatus,isFault,isAlarm}}}}'
+        }
+        seList(postData).then(res => {
+          this.andianList = res['data']['areaSeList']
+          console.log(this.andianList)
         })
       },
-      goOut() {
-        clearInterval(this.timer)
-        window.localStorage.clear()
-        this.$router.replace('/login')
-      },
-      edit(item) {
-        clearInterval(this.timer)
+      goToDetails(item) {
+        console.log(item)
         const objAdd = JSON.stringify(item)
         this.$router.replace({
-          path: '/device-register-info?objAdd=' + encodeURIComponent(objAdd),
-          query: { router: '/home' }
-        })
-      },
-      remove(item) {
-        removeDevice({ deviceId: item.id }).then(res => {
-          Toast('删除设备成功')
-          this.getDevicesInfo()
-        })
-      },
-      getUnHandleAlarmListInfo() {
-        getUnHandleAlarmList().then(res => {
-          if (res.data.length > 0) {
-            clearInterval(this.timer)
-            this.$router.replace('/device-alert')
-          }
-        }).catch(res => {
+          path: '/andian-info?objAdd=' + encodeURIComponent(objAdd),
+          query: { routerParms: '/ship-index' }
         })
       }
     }
@@ -124,7 +102,7 @@
   .wd {
     width: 100%;
     height: 50px;
-    background-color: rgba(25,37,56,.7);
+    background-color: rgba(25, 37, 56, .7);
     border-radius: 5px;
   }
 
@@ -147,16 +125,16 @@
     border: 1px solid #999EA5;
   }
 
-  .cir-green {
-    background-color: #42b983;
-  }
-
   .cir-orange {
     background-color: #FDAD6E;
   }
 
   .cir-red {
     background-color: #F31B1B;
+  }
+
+  .cir-green {
+    background-color: #42b983;
   }
 
   .index-bg {
