@@ -55,7 +55,6 @@
 
           <!--          <van-field v-model="proresult" placeholder="请输入处置结果" class="fs16"/>-->
         </div>
-
       </div>
 
       <div class="flex mt25">
